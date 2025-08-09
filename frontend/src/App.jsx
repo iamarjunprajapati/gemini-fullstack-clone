@@ -117,6 +117,10 @@ function App() {
           <button onClick={handleLogout} className="font-semibold text-red-600 hover:underline">Logout</button>
         </div>
       </header>
+      {/* === YEH NAYI LINE ADD KAREIN === */}
+      <p style={{ padding: '0 1rem', background: 'yellow', textAlign: 'center' }}>
+        DEBUG: Backend URL is: {import.meta.env.VITE_API_BASE_URL}
+      </p>
 
       <main ref={chatWindowRef} className="chat-window flex-grow p-4 overflow-y-auto">
         <div className="space-y-4">
