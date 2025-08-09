@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { auth, googleProvider } from './firebase';
 import { signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
-
 import './App.css';
 
 function App() {
@@ -13,7 +12,6 @@ function App() {
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
-  // STEP 1: Naya state add kiya gaya
   const [loadingText, setLoadingText] = useState("Thinking...");
   const chatWindowRef = useRef(null);
 
@@ -26,12 +24,9 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (chatWindowRef.current) {
+    if (chatWindowRef.current) {
         chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
-      }
-    }, 0);
-    return () => clearTimeout(timer);
+    }
   }, [messages, isLoading]);
 
   const handleSubmit = async (event) => {
@@ -46,7 +41,6 @@ function App() {
     handleRemoveImage();
     setInput("");
 
-    // STEP 2: Loading text ko dynamically set kiya gaya
     if (imageFile) {
       setLoadingText("Uploading and processing image...");
     } else {
@@ -64,7 +58,7 @@ function App() {
     }
     
     try {
-        const response = await fetch('http://localhost:4000/api/chat', {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/chat`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -88,29 +82,15 @@ function App() {
   };
 
   const handleLogin = async () => {
-    try {
-      await signInWithPopup(auth, googleProvider);
-    } catch (error) {
-      console.error("Login failed:", error);
-    }
+    try { await signInWithPopup(auth, googleProvider); } catch (error) { console.error("Login failed:", error); }
   };
 
   const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      setMessages([]);
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
+    try { await signOut(auth); setMessages([]); } catch (error) { console.error("Logout failed:", error); }
   };
 
-  const handleInputChange = (event) => {
-    setInput(event.target.value);
-  };
-
-  const handleUploadButtonClick = () => {
-    fileInputRef.current.click();
-  };
+  const handleInputChange = (event) => { setInput(event.target.value); };
+  const handleUploadButtonClick = () => { fileInputRef.current.click(); };
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -121,11 +101,8 @@ function App() {
   };
 
   const handleRemoveImage = () => {
-    setImageFile(null);
-    setImagePreview(null);
-    if(fileInputRef.current) {
-        fileInputRef.current.value = null; 
-    }
+    setImageFile(null); setImagePreview(null);
+    if(fileInputRef.current) { fileInputRef.current.value = null; }
   };
 
   if (loading) { return <div className="flex justify-center items-center min-h-screen"><h1>Loading...</h1></div>; }
@@ -133,13 +110,13 @@ function App() {
 
   return (
     <div className="app bg-gray-100 h-screen flex flex-col">
-        <header className="flex justify-between items-center p-4 bg-white border-b flex-shrink-0">
-          <h1 className="text-xl font-bold">Gemini Chat</h1>
-          <div className="flex items-center">
-            <img src={user.photoURL} alt={user.displayName} className="w-8 h-8 rounded-full mr-4"/>
-            <button onClick={handleLogout} className="font-semibold text-red-600 hover:underline">Logout</button>
-          </div>
-        </header>
+      <header className="flex justify-between items-center p-4 bg-white border-b flex-shrink-0">
+        <h1 className="text-xl font-bold">Gemini Chat</h1>
+        <div className="flex items-center">
+          <img src={user.photoURL} alt={user.displayName} className="w-8 h-8 rounded-full mr-4"/>
+          <button onClick={handleLogout} className="font-semibold text-red-600 hover:underline">Logout</button>
+        </div>
+      </header>
 
       <main ref={chatWindowRef} className="chat-window flex-grow p-4 overflow-y-auto">
         <div className="space-y-4">
@@ -152,7 +129,6 @@ function App() {
               </div>
             </div>
           ))}
-          {/* STEP 3: Yahan naye state ka istemal kiya gaya */}
           {isLoading && (
             <div className="message flex justify-start">
               <div className="p-3 rounded-lg shadow-md max-w-2xl bg-white text-gray-800">
